@@ -3,6 +3,7 @@ import 'package:my_mtr_schedule/Data/localized_string.dart';
 import 'package:my_mtr_schedule/Data/mtr_data.dart';
 import 'package:my_mtr_schedule/Data/ui_labels.dart';
 import 'package:my_mtr_schedule/api_service.dart';
+import 'package:my_mtr_schedule/preferences_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,10 +19,25 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   AppLang _lang = AppLang.en;
 
+  @override
+  void initState() {
+    super.initState();
+    
+    _loadLang();
+  }
+
+  void _loadLang() async {
+    final savedLang = await PreferencesService.loadLanguage();
+    setState(() {
+      _lang = savedLang;
+    });
+  }
+
   void _toggleLang() {
     setState(() {
       _lang = _lang == AppLang.en ? AppLang.tc : AppLang.en;
     });
+    PreferencesService.saveLanguage(_lang);
   }
 
   @override
@@ -143,14 +159,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: _handleManualRefresh,
-              tooltip: "Refresh",
+              tooltip: uiLabels["refresh"]!.get(widget.lang),
             ),
             Padding(
               padding: const EdgeInsets.only(right: 12.0),
               child: TextButton.icon(
                 onPressed: widget.onLangToggle,
                 icon: const Icon(Icons.language, size: 20),
-                label: Text(widget.lang == AppLang.en ? "EN" : "中", 
+                label: Text(uiLabels["app_lang"]!.get(widget.lang), 
                     style: const TextStyle(fontWeight: FontWeight.bold)),
                 style: TextButton.styleFrom(foregroundColor: Colors.blue[800]),
               ),
@@ -201,9 +217,7 @@ class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAlive
   @override
   void initState() {
     super.initState();
-    _selectedLine = mtrLines[0];
-    _selectedStation = _selectedLine!.stations[0];
-    loadSchedule();
+    _loadSavedSettings();
   }
 
   @override
@@ -212,6 +226,32 @@ class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAlive
     if (oldWidget.lang != widget.lang) {
       loadSchedule();
     }
+  }
+
+  Future<void> _loadSavedSettings() async {
+    final saved = await PreferencesService.loadNormalRail();
+    
+    if (saved != null) {
+      final foundLine = mtrLines.firstWhere(
+        (l) => l.code == saved["line"], 
+        orElse: () => mtrLines[2] // Tuen Ma Line
+      );
+      
+      final foundStation = foundLine.stations.firstWhere(
+        (s) => s.code == saved["station"], 
+        orElse: () => foundLine.stations[0]
+      );
+
+      setState(() {
+        _selectedLine = foundLine;
+        _selectedStation = foundStation;
+      });
+    } else {
+      _selectedLine = mtrLines[2]; // Tuen Ma Line
+      _selectedStation = mtrLines[2].stations[mtrLines[2].stations.length - 1]; // Tuen Mun
+    }
+    
+    loadSchedule();
   }
 
   void loadSchedule() {
@@ -274,6 +314,11 @@ class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAlive
                     _selectedStation = val!.stations[0];
                     loadSchedule();
                   });
+                  final selectedLine = _selectedLine;
+                  final selectedStation = _selectedStation;
+                  if (selectedLine != null && selectedStation != null) {
+                    PreferencesService.saveNormalRail(selectedLine.code, selectedStation.code);
+                  }
                 },
               ),
               const SizedBox(height: 12),
@@ -298,6 +343,11 @@ class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAlive
                     _selectedStation = val;
                     loadSchedule();
                   });
+                  final selectedLine = _selectedLine;
+                  final selectedStation = _selectedStation;
+                  if (selectedLine != null && selectedStation != null) {
+                    PreferencesService.saveNormalRail(selectedLine.code, selectedStation.code);
+                  }
                 },
               ),
             ],
@@ -380,9 +430,7 @@ class _LightRailPageState extends State<LightRailPage> with AutomaticKeepAliveCl
   @override
   void initState() {
     super.initState();
-    // Default Tuen Mun 295
-    _selectedStation = lightRailStations.firstWhere((s) => s.id == 295, orElse: () => lightRailStations[0]);
-    loadSchedule();
+    _loadSavedSettings();
   }
 
   @override
@@ -391,6 +439,27 @@ class _LightRailPageState extends State<LightRailPage> with AutomaticKeepAliveCl
     if (oldWidget.lang != widget.lang) {
       loadSchedule();
     }
+  }
+
+  Future<void> _loadSavedSettings() async {
+    final savedId = await PreferencesService.loadLightRail();
+    
+    if (savedId != null) {
+      final foundStation = lightRailStations.firstWhere(
+        (s) => s.id == savedId,
+        // Default Tuen Mun 295
+        orElse: () => lightRailStations.firstWhere((s) => s.id == 295)
+      );
+      
+      setState(() {
+        _selectedStation = foundStation;
+      });
+    } else {
+      // Default Tuen Mun 295
+      _selectedStation = lightRailStations.firstWhere((s) => s.id == 295);
+    }
+    
+    loadSchedule();
   }
 
   void loadSchedule() {
@@ -442,6 +511,9 @@ class _LightRailPageState extends State<LightRailPage> with AutomaticKeepAliveCl
                 _selectedStation = val;
                 loadSchedule();
               });
+              if (val != null && val.id != null) {
+                PreferencesService.saveLightRail(val.id!);
+              }
             },
           ),
         ),
