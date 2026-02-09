@@ -7,6 +7,8 @@ import 'package:my_mtr_schedule/Data/localized_string.dart';
 import 'package:my_mtr_schedule/Data/mtr_data.dart';
 
 const String defaultUpdateTime = "--:--:--";
+const bool enableAutoRefetch = false;
+const int refetechSeconds = 60;
 
 class MtrResult {
   final Map<String, List<TrainSchedule>> schedules;

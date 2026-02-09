@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:my_mtr_schedule/Data/localized_string.dart';
 import 'package:my_mtr_schedule/Data/mtr_data.dart';
@@ -205,7 +207,9 @@ class NormalRailPage extends StatefulWidget {
   State<NormalRailPage> createState() => _NormalRailPageState();
 }
 
-class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAliveClientMixin {
+class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
+  Timer? _timer;
+  DateTime? lastFetchedDt;
   MtrLine? _selectedLine;
   MtrStation? _selectedStation;
   Future<MtrResult>? _futureSchedule;
@@ -217,7 +221,15 @@ class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAlive
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadSavedSettings();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -226,6 +238,34 @@ class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAlive
     if (oldWidget.lang != widget.lang) {
       loadSchedule();
     }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (enableAutoRefetch) {
+      if (state == AppLifecycleState.resumed) {
+        final llastFetchedDt = lastFetchedDt;
+        if (llastFetchedDt != null) {
+          final secDiff = (DateTime.now().toUtc().difference(llastFetchedDt)).inSeconds;
+          if (secDiff >= refetechSeconds) {
+            loadSchedule();
+          } else {
+            _startTimer(duration: Duration(seconds: secDiff <= 0 ? refetechSeconds : refetechSeconds - secDiff));
+          }
+        } else {
+          _startTimer();
+        }
+      } else {
+        _timer?.cancel();
+      }
+    }
+  }
+
+  void _startTimer({Duration? duration}) {
+    _timer?.cancel();
+    _timer = Timer(duration ?? Duration(seconds: refetechSeconds), () {
+      loadSchedule();
+    });
   }
 
   Future<void> _loadSavedSettings() async {
@@ -255,6 +295,7 @@ class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAlive
   }
 
   void loadSchedule() {
+    _timer?.cancel();
     if (_selectedLine != null && _selectedStation != null) {
       final future = ApiService.fetchNormalRail(
         _selectedLine!.code, 
@@ -263,8 +304,13 @@ class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAlive
       );
 
       future.then((result) {
+        if (!mounted) return;
+        lastFetchedDt = DateTime.now().toUtc();
         lastReceivedTime = result.sysTime;
         widget.onTimeUpdate(result.sysTime);
+        if (enableAutoRefetch) {
+          _startTimer();
+        }
       }).catchError((_) {});
 
       setState(() {
@@ -419,7 +465,9 @@ class LightRailPage extends StatefulWidget {
   State<LightRailPage> createState() => _LightRailPageState();
 }
 
-class _LightRailPageState extends State<LightRailPage> with AutomaticKeepAliveClientMixin {
+class _LightRailPageState extends State<LightRailPage> with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
+  Timer? _timer;
+  DateTime? lastFetchedDt;
   MtrStation? _selectedStation;
   Future<MtrResult>? _futureSchedule;
   String lastReceivedTime = defaultUpdateTime;
@@ -430,7 +478,43 @@ class _LightRailPageState extends State<LightRailPage> with AutomaticKeepAliveCl
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadSavedSettings();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (enableAutoRefetch) {
+      if (state == AppLifecycleState.resumed) {
+        final llastFetchedDt = lastFetchedDt;
+        if (llastFetchedDt != null) {
+          final secDiff = (DateTime.now().toUtc().difference(llastFetchedDt)).inSeconds;
+          if (secDiff >= refetechSeconds) {
+            loadSchedule();
+          } else {
+            _startTimer(duration: Duration(seconds: secDiff <= 0 ? refetechSeconds : refetechSeconds - secDiff));
+          }
+        } else {
+          _startTimer();
+        }
+      } else {
+        _timer?.cancel();
+      }
+    }
+  }
+
+  void _startTimer({Duration? duration}) {
+    _timer?.cancel();
+    _timer = Timer(duration ?? Duration(seconds: refetechSeconds), () {
+      loadSchedule();
+    });
   }
 
   @override
@@ -463,12 +547,18 @@ class _LightRailPageState extends State<LightRailPage> with AutomaticKeepAliveCl
   }
 
   void loadSchedule() {
+    _timer?.cancel();
     if (_selectedStation != null) {
       final future = ApiService.fetchLightRail(_selectedStation!.id!, widget.lang);
 
       future.then((result) {
+        if (!mounted) return;
+        lastFetchedDt = DateTime.now().toUtc();
         lastReceivedTime = result.sysTime;
         widget.onTimeUpdate(result.sysTime);
+        if (enableAutoRefetch) {
+          _startTimer();
+        }
       }).catchError((_) { });
       setState(() {
         _futureSchedule = future;
