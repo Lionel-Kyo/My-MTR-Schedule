@@ -100,8 +100,10 @@ final List<MtrLine> mtrLines = [
   ),
   MtrLine(
     code: "TML",
-    name: const LocalizedString("Tuen Ma Line", "屯馬綫"),
-    color: const Color(0xFF923011),
+    // name: const LocalizedString("Tuen Ma Line", "屯馬綫"),
+    // color: const Color(0xFF923011),
+    name: const LocalizedString("West Rail Line", "西鐵綫"),
+    color: const Color(0xFFA3238F),
     stations: [
       MtrStation(code: "WKS", name: const LocalizedString("Wu Kai Sha", "烏溪沙")),
       MtrStation(code: "MOS", name: const LocalizedString("Ma On Shan", "馬鞍山")),

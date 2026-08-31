@@ -99,10 +99,15 @@ class ApiService {
       Map<String, List<TrainSchedule>> results = {};
 
       for (var p in platformList) {
-        String platId = p["platform_id"].toString();
-        List<dynamic> routes = p["route_list"];
+        String? platId = p["platform_id"]?.toString();
+        if (platId == null) {
+          continue;
+        }
+        List<dynamic> routes = p["route_list"] ?? [];
         
-        List<TrainSchedule> trains = routes.map((r) {
+        List<TrainSchedule> trains = routes.where((r) {
+          return (r["stop"] ?? 1).toString().trim() == "0";
+        }).map((r) {
           String dest = (lang == AppLang.en) 
               ? (r["dest_en"] ?? "") 
               : (r["dest_ch"] ?? "");

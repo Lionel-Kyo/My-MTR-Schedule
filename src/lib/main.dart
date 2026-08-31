@@ -7,6 +7,10 @@ import 'package:my_mtr_schedule/Data/ui_labels.dart';
 import 'package:my_mtr_schedule/api_service.dart';
 import 'package:my_mtr_schedule/preferences_service.dart';
 
+const lightPurpleColor = Color(0xFFD8B4FF);
+const lrtColor = Color(0xFFD3A809);
+const oldLrtColor = Color(0xFFFD722D);
+
 void main() {
   runApp(const MyApp());
 }
@@ -44,14 +48,46 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    // return MaterialApp(
+    //   title: "MTR Schedule",
+    //   debugShowCheckedModeBanner: false,
+    //   theme: ThemeData(
+    //     primarySwatch: Colors.blue,
+    //     useMaterial3: true,
+    //     // fontFamily: _lang == AppLang.tc ? "Noto Sans HK" : "Roboto", 
+    //     fontFamily: "Noto Sans HK", 
+    //   ),
+    //   home: HomeScreen(lang: _lang, onLangToggle: _toggleLang),
+    // );
     return MaterialApp(
       title: "MTR Schedule",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        brightness: Brightness.dark,
+        primaryColor: lightPurpleColor,
+        scaffoldBackgroundColor: const Color(0xFF121212),
         useMaterial3: true,
-        // fontFamily: _lang == AppLang.tc ? "Noto Sans HK" : "Roboto", 
-        fontFamily: "Noto Sans HK", 
+          // fontFamily: _lang == AppLang.tc ? "Noto Sans HK" : "Roboto", 
+          fontFamily: "Noto Sans HK", 
+        
+        // SET GLOBAL TEXT COLOR TO LIGHT PURPLE
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: lightPurpleColor),
+          bodyMedium: TextStyle(color: lightPurpleColor),
+          titleLarge: TextStyle(color: lightPurpleColor, fontWeight: FontWeight.bold),
+          titleMedium: TextStyle(color: lightPurpleColor),
+        ),
+        
+        // Update Input/Dropdown Styles
+        inputDecorationTheme: InputDecorationTheme(
+          labelStyle: const TextStyle(color: lightPurpleColor),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.purple[100]!.withValues(alpha: 0.5)),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: lightPurpleColor),
+          ),
+        ),
       ),
       home: HomeScreen(lang: _lang, onLangToggle: _toggleLang),
     );
@@ -123,13 +159,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFFE0EAFC), Color(0xFFCFDEF3)],
+          // colors: [Color(0xFFE0EAFC), Color(0xFFCFDEF3)],
+          colors: [Color(0xFF141414), Color(0xFF1E1E1E)],
         ),
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
-          backgroundColor: Colors.white.withValues(alpha: 0.8),
+          // backgroundColor: Colors.white.withValues(alpha: 0.8),
+          backgroundColor: Colors.black.withValues(alpha: 0.6), 
+          foregroundColor: lightPurpleColor, 
           title: Text(
             uiLabels["app_title"]!.get(widget.lang),
             style: const TextStyle(fontWeight: FontWeight.bold),
@@ -151,7 +190,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       style: TextStyle(
                         fontSize: 14, 
                         fontWeight: FontWeight.bold, 
-                        color: Colors.blueGrey[800]
+                        // color: Colors.blueGrey[800]
+                        color: lightPurpleColor,
                       ),
                     ),
                   ],
@@ -170,15 +210,19 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 icon: const Icon(Icons.language, size: 20),
                 label: Text(uiLabels["app_lang"]!.get(widget.lang), 
                     style: const TextStyle(fontWeight: FontWeight.bold)),
-                style: TextButton.styleFrom(foregroundColor: Colors.blue[800]),
+                // style: TextButton.styleFrom(foregroundColor: Colors.blue[800]),
+                style: TextButton.styleFrom(foregroundColor: lightPurpleColor),
               ),
             ),
           ],
           bottom: TabBar(
             controller: _tabController,
-            labelColor: Colors.blue[800],
-            unselectedLabelColor: Colors.grey[600],
-            indicatorColor: Colors.blue[800],
+            // labelColor: Colors.blue[800],
+            // unselectedLabelColor: Colors.grey[600],
+            // indicatorColor: Colors.blue[800],
+            labelColor: lightPurpleColor,
+            unselectedLabelColor: Colors.white38, 
+            indicatorColor: lightPurpleColor, 
             tabs: [
               Tab(icon: const Icon(Icons.train), text: uiLabels["tab_mtr"]!.get(widget.lang)),
               Tab(icon: const Icon(Icons.tram), text: uiLabels["tab_light"]!.get(widget.lang)),
@@ -327,20 +371,25 @@ class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAlive
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.6),
-            border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.5))),
+            // color: Colors.white.withValues(alpha: 0.6),
+            // border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.5))),
+            color: Colors.black.withValues(alpha: 0.5),
+            border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
           ),
           child: Column(
             children: [
               // Line Selector
               DropdownButtonFormField<MtrLine>(
+                dropdownColor: const Color(0xFF2D2D2D),
                 decoration: InputDecoration(
                   labelText: uiLabels["select_line"]!.get(widget.lang),
                   border: const OutlineInputBorder(),
                   filled: true,
-                  fillColor: Colors.white.withValues(alpha: 0.7),
+                  // fillColor: Colors.white.withValues(alpha: 0.7),
+                  fillColor: Colors.white.withValues(alpha: 0.05),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),
+                style: const TextStyle(color: lightPurpleColor),
                 initialValue: _selectedLine,
                 items: mtrLines.map((line) {
                   return DropdownMenuItem(
@@ -370,13 +419,16 @@ class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAlive
               const SizedBox(height: 12),
               // Station Selector
               DropdownButtonFormField<MtrStation>(
+                dropdownColor: const Color(0xFF2D2D2D),
                 decoration: InputDecoration(
                   labelText: uiLabels["select_station"]!.get(widget.lang),
                   border: const OutlineInputBorder(),
                   filled: true,
-                  fillColor: Colors.white.withValues(alpha: 0.7),
+                  // fillColor: Colors.white.withValues(alpha: 0.7),
+                  fillColor: Colors.white.withValues(alpha: 0.05),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),
+                style: const TextStyle(color: lightPurpleColor),
                 initialValue: _selectedStation,
                 items: _selectedLine?.stations.map((sta) {
                   return DropdownMenuItem(
@@ -421,12 +473,12 @@ class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAlive
                   padding: const EdgeInsets.all(12),
                   children: [
                     if (upTrains.isNotEmpty) ...[
-                       _buildDirectionHeader("${uiLabels["platform"]!.get(widget.lang)} ${upTrains.first.plat}"),
+                       _buildDirectionHeader("${uiLabels["platform"]!.get(widget.lang)} ${upTrains.first.plat}", _selectedLine?.color),
                        ...upTrains.map((t) => TrainCard(train: t, color: _selectedLine?.color, lang: widget.lang)),
                     ],
                     const SizedBox(height: 16),
                     if (downTrains.isNotEmpty) ...[
-                       _buildDirectionHeader("${uiLabels["platform"]!.get(widget.lang)} ${downTrains.first.plat}"),
+                       _buildDirectionHeader("${uiLabels["platform"]!.get(widget.lang)} ${downTrains.first.plat}", _selectedLine?.color),
                        ...downTrains.map((t) => TrainCard(train: t, color: _selectedLine?.color, lang: widget.lang)),
                     ],
                   ],
@@ -439,7 +491,7 @@ class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAlive
     );
   }
 
-  Widget _buildDirectionHeader(String title) {
+  Widget _buildDirectionHeader(String title, Color? color) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4),
       child: Text(
@@ -447,8 +499,9 @@ class _NormalRailPageState extends State<NormalRailPage> with AutomaticKeepAlive
         style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.blueGrey[800],
-            shadows: [Shadow(color: Colors.white.withValues(alpha: 0.5), offset: const Offset(1,1), blurRadius: 2)]
+            // color: Colors.blueGrey[800],
+            color: color,
+            // shadows: [Shadow(color: Colors.white.withValues(alpha: 0.5), offset: const Offset(1,1), blurRadius: 2)]
         ),
       ),
     );
@@ -577,18 +630,23 @@ class _LightRailPageState extends State<LightRailPage> with AutomaticKeepAliveCl
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.6),
-            border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.5))),
+            // color: Colors.white.withValues(alpha: 0.6),
+            // border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.5))),
+            color: Colors.black.withValues(alpha: 0.5),
+            border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
           ),
           child: DropdownButtonFormField<MtrStation>(
+            dropdownColor: const Color(0xFF2D2D2D),
             isExpanded: true,
             decoration: InputDecoration(
               labelText: uiLabels["select_lr_station"]!.get(widget.lang),
               border: const OutlineInputBorder(),
               filled: true,
-              fillColor: Colors.white.withValues(alpha: 0.7),
+              // fillColor: Colors.white.withValues(alpha: 0.7),
+              fillColor: Colors.white.withValues(alpha: 0.05),
               prefixIcon: const Icon(Icons.search),
             ),
+            style: const TextStyle(color: lightPurpleColor),
             initialValue: _selectedStation,
             items: sortedStations.map((sta) {
               return DropdownMenuItem(
@@ -640,12 +698,12 @@ class _LightRailPageState extends State<LightRailPage> with AutomaticKeepAliveCl
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.orange[800],
-                                shadows: [Shadow(color: Colors.white.withValues(alpha: 0.5), offset: const Offset(1,1), blurRadius: 2)]
+                                color: lrtColor,
+                                // shadows: [Shadow(color: Colors.white.withValues(alpha: 0.5), offset: const Offset(1,1), blurRadius: 2)]
                             ),
                           ),
                         ),
-                        ...trains.map((t) => TrainCard(train: t, color: Colors.orange, lang: widget.lang)),
+                        ...trains.map((t) => TrainCard(train: t, color: lrtColor, lang: widget.lang)),
                         const SizedBox(height: 12),
                       ],
                     );
@@ -672,7 +730,8 @@ class TrainCard extends StatelessWidget {
     return Card(
       elevation: 4,
       shadowColor: Colors.black26,
-      color: Colors.white.withValues(alpha: 0.9), 
+      // color: Colors.white.withValues(alpha: 0.9), 
+      color: const Color(0xFF1E1E1E).withValues(alpha: 0.9),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       margin: const EdgeInsets.symmetric(vertical: 6),
       child: ListTile(
@@ -683,25 +742,31 @@ class TrainCard extends StatelessWidget {
         ),
         title: Text(
           train.getRowTitle(lang),
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold, 
+            fontSize: 16,
+            color: Color(0xFFE1E1E1),
+          ),
         ),
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color: color ?? Colors.blue,
+            // color: color ?? Colors.blue,
+            color: color ?? lightPurpleColor, 
             borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: (color ?? Colors.blue).withValues(alpha: 0.4),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              )
-            ]
+            // boxShadow: [
+            //   BoxShadow(
+            //     color: (color ?? Colors.blue).withValues(alpha: 0.4),
+            //     blurRadius: 4,
+            //     offset: const Offset(0, 2),
+            //   )
+            // ]
           ),
           child: Text(
             train.time,
             style: const TextStyle(
               color: Colors.white,
+              // color: Colors.black,
               fontWeight: FontWeight.bold,
             ),
           ),
