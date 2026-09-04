@@ -1,4 +1,4 @@
-import 'package:my_mtr_schedule/Data/localized_string.dart';
+import 'package:my_mtr_schedule/data/localized_string.dart';
 
 const Map<String, LocalizedString> uiLabels = {
   "app_title": LocalizedString("HK MTR Schedule", "港鐵列車時間"),

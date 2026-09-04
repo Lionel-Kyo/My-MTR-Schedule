@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_mtr_schedule/Data/localized_string.dart';
+import 'package:my_mtr_schedule/data/localized_string.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferencesService {

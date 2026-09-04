@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_mtr_schedule/Data/localized_string.dart';
-import 'package:my_mtr_schedule/Data/ui_labels.dart';
+import 'package:my_mtr_schedule/data/localized_string.dart';
+import 'package:my_mtr_schedule/data/ui_labels.dart';
 
 class MtrLine {
   final String code;

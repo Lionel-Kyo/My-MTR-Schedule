@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:my_mtr_schedule/Data/localized_string.dart';
-import 'package:my_mtr_schedule/Data/mtr_data.dart';
+import 'package:my_mtr_schedule/data/localized_string.dart';
+import 'package:my_mtr_schedule/data/mtr_data.dart';
 
 const String defaultUpdateTime = "--:--:--";
 const bool enableAutoRefetch = false;
