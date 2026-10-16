@@ -56,8 +56,8 @@ class _WatchSelectionScreenState<T> extends State<_WatchSelectionScreen<T>> {
       if (mounted && ModalRoute.of(context)?.isCurrent == true &&
           _scrollController.hasClients) {
         final double delta = event.direction == RotaryDirection.clockwise
-            ? 15.0
-            : -15.0;
+            ? 20.0
+            : -20.0;
         final double target = (_scrollController.offset + delta).clamp(
           _scrollController.position.minScrollExtent,
           _scrollController.position.maxScrollExtent,
@@ -157,8 +157,8 @@ class _WearHomeScreenState extends State<WearHomeScreen>
       if (mounted && ModalRoute.of(context)?.isCurrent == true &&
           _scrollController.hasClients) {
         final double delta = event.direction == RotaryDirection.clockwise
-            ? 15.0
-            : -15.0;
+            ? 20.0
+            : -20.0;
         final double target = (_scrollController.offset + delta).clamp(
           _scrollController.position.minScrollExtent,
           _scrollController.position.maxScrollExtent,
